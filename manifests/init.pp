@@ -29,7 +29,7 @@ class phpfpm (
 
 	file { "/etc/php5/fpm/pool.d/www.conf": 
 		ensure => $ensure,
-		content => template('phpfpm/www.conf'),
+		content => template('phpfpm/www.conf.erb'),
 		notify => Service['php5-fpm'],
 		require => Package['php5-fpm']
 	}
