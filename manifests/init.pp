@@ -3,19 +3,35 @@
 # See README.md
 #
 class phpfpm (
-    $ensure = 'present',
+	$ensure = 'present',
+	$user = 'www-data',
+	$group = 'www-data',
+	$socket = true
 ) {
-  $running = $ensure ? {
-    absent  => 'stopped',
-    default => 'running',
-  }
+	$running = $ensure ? {
+		absent  => 'stopped',
+		default => 'running',
+	}
 
-  package { 'php5-fpm':
-    ensure => $ensure,
-  }
+	$listen = $socket ? {
+		true => '/var/run/php5-fpm.sock',
+		default => '127.0.0.1:9000'
+	}
 
-  service { 'php5-fpm':
-    ensure  => $running,
-    require => Package['nginx'],
-  }
+	package { 'php5-fpm':
+		ensure => $ensure,
+	}
+
+	service { 'php5-fpm':
+		ensure  => $running,
+		require => Package['nginx'],
+	}
+
+	file { "/etc/php5/fpm/pool.d/www.conf": 
+		ensure => $ensure,
+		content => template('phpfpm/www.conf'),
+		notify => Service['php5-fpm'],
+		require => Package['php5-fpm']
+	}
+
 }
