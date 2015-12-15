@@ -23,8 +23,7 @@ class phpfpm (
 	}
 
 	service { 'php5-fpm':
-		ensure  => $running,
-		require => Package['nginx'],
+		ensure  => $running
 	}
 
 	file { "/etc/php5/fpm/pool.d/www.conf": 
